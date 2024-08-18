@@ -77,6 +77,10 @@ app.post('/login', async(req, res) => {
   }
 });
 
+app.post('/logout', async(req, res) => {
+  
+})
+
 // route to show logged in user's details
 app.get('/profile', async(req, res) => {
   const token = req.header('Authorization')?.split(' ')[1];
