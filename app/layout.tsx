@@ -27,7 +27,7 @@ export default function RootLayout({
       
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        {/* <meta name="theme-color" content="#317EFB" /> */}
+        <meta name="theme-color" content="#317EFB" />
       </head>
       <body className={`{inter.className} dark:bg-gray-900 dark:text-white`}>
         {/* <AuthProvider> */}
@@ -35,7 +35,7 @@ export default function RootLayout({
             <div className="gradient" />
           </div>
           <main className="app">
-            {/* <Nav /> */}
+            <Nav />
             {children}
           </main>
         {/* </AuthProvider> */}

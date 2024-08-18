@@ -5,7 +5,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const pool = require('./db');
 const axios = require('axios');
-const moment = require('moment')
+const moment = require('moment');
+const { decode } = require('punycode');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -76,6 +77,27 @@ app.post('/login', async(req, res) => {
   }
 });
 
+// route to show logged in user's details
+app.get('/profile', async(req, res) => {
+  const token = req.header('Authorization')?.split(' ')[1];
+  if(!token) {
+    return res.status(401).json({ error: 'no token provided'});
+  }
+  try {
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    const id = decodedToken.id;
+    console.log(id);
+    const user = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+    if( user.rows.length === 0) {
+      res.status(404).json({ error: 'User not found '});
+    }
+    res.json(user.rows[0]);
+  } catch(err) {
+    console.error('Error retrieving profile: ', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // experiment with middleware - please work
 const authMiddleware = (req, res, next) => {
   // get second part of header value - form is Bearer <token>
@@ -103,7 +125,7 @@ app.get('/protected-route', authMiddleware, (req, res) => {
 // need CRUD functionality for events
 // event table has id, title, description, date, location, created_by, created_at, start_time, end_time
 // route for creating events
-app.post('/events', async(req, res) => {
+app.post('/events/new', async(req, res) => {
   // id, created by, and created at shouldn't be required params
   const { title, description, location, start_time, end_time, date } = req.body;
   
@@ -158,21 +180,21 @@ app.get('/events/:id', async(req, res) => {
   }
 });
 
-// route for retrieving an event by date
-app.get('/events/:date', async(req, res) => {
-  const { date } = req.params;
-  try {
-    const event = await pool.query('SELECT * FROM events WHERE date = $1', [date]);
+// // route for retrieving an event by date
+// app.get('/events/:date', async(req, res) => {
+//   const { date } = req.params;
+//   try {
+//     const event = await pool.query('SELECT * FROM events WHERE date = $1', [date]);
 
-    if(event.rows.length === 0) {
-      return res.status(404).json({ error: 'Event not found' });
-    }
-    res.status(200).json(event.rows[0])
-  } catch(err) {
-    console.error("Error retrieving event: ", err);
-    res.status(500).json({ error: err.message });
-  }
-});
+//     if(event.rows.length === 0) {
+//       return res.status(404).json({ error: 'Event not found' });
+//     }
+//     res.status(200).json(event.rows[0])
+//   } catch(err) {
+//     console.error("Error retrieving event: ", err);
+//     res.status(500).json({ error: err.message });
+//   }
+// });
 
 // route for updating an event
 app.put('/events/:id', async(req, res) => {
