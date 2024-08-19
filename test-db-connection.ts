@@ -1,12 +1,9 @@
-// lib/db.ts
-// database connection helper file
-console.log(" DB file loaded ");
+// test-db-connection.ts
 import { Pool } from 'pg';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-// just get details from env file
 const pool = new Pool({
     user: process.env.DB_USER,
     host: process.env.DB_HOST,
@@ -16,11 +13,10 @@ const pool = new Pool({
 });
 
 pool.connect((err) => {
-    if(err){
+    if (err) {
         console.error('Connection error: ', err.stack);
     } else {
-        console.log('Connected to database successfully')
+        console.log('Connected to database successfully');
     }
+    pool.end();
 });
-
-export default pool;

@@ -23,7 +23,7 @@ export async function POST(request: Request) {
         // if correct email and password are given, create a jwt token to identify user
         const token = generateToken(user.id, process.env.JWT_SECRET!, user.username);
 
-        return NextResponse.json({token});
+        return NextResponse.json({token}, {status: 200});
 
     } catch(error) {
         console.error("Error during login: ", error);

@@ -14,13 +14,20 @@ export default function RegisterPage() {
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
+        // console.log("entered handle submit") 
         e.preventDefault();
+        // console.log("before loading true")
         setLoading(true);
-
+        // console.log("After loading true")
         try{
-            const response = await axios.post('/register', { username, email, password });
-            if(response.status === 200) {
+            // console.log("Before register");
+            const response = await axios.post('/api/register', { username, email, password });
+            // console.log("After register - looking for return in response...");
+            if(response.data.user) {
                 router.push('/login');
+            } else {
+                console.error("Registration failed");
+                setError("Registration failed. Please try again");
             }
         } catch (error) {
             console.error("Error during registration: ", error);
@@ -28,7 +35,7 @@ export default function RegisterPage() {
         } finally {
             setLoading(false);
         }
-    }
+    };
 
     return (
         <div className="flex justify-center items-center h-screen bg-gray-100">
@@ -101,4 +108,4 @@ export default function RegisterPage() {
             </div>
         </div>
     );
-}
+};
