@@ -19,6 +19,7 @@ export default function LoginPage() {
         try{
             const response = await axios.post('/api/login', { email, password });
             if(response.status === 200) {
+                console.log('Authorization header: ', response.headers['authorization']);
                 localStorage.setItem('token', response.data.token);
                 router.push('/');
             }
